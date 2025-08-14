@@ -5,16 +5,17 @@ from transformers import AutoTokenizer
 # Setup
 app = Flask(__name__)
 OLLAMA_URL = "http://localhost:11434/api/generate"
-MODEL_NAME = "llama3.2"
+MODEL_NAME = "llama3.1"
 
 # Load tokenizer (used if needed for advanced control, not required for core logic)
-TOKENIZER_PATH = r"C:\Users\parsa.rahmaty\.cache\llamatokenizer"
+TOKENIZER_PATH = r".\llamatokenizer"
 tokenizer = AutoTokenizer.from_pretrained(TOKENIZER_PATH, use_fast=True)
 
+port = 0
 
 # 🧠 ChatSession stores the running conversation
 class ChatSession:
-    def __init__(self, model="llama3.2"):
+    def __init__(self, model="llama3.1"):
         self.history = []
         self.model = model
         self.system_prompt = "You are a helpful assistant."  # You can customize this
@@ -66,6 +67,8 @@ def chat():
         chat_session.add_user_message(user_prompt)
         assistant_reply = chat_session.send_prompt()
 
+        print("Reply: " + assistant_reply)
+
         return jsonify({
             "response": assistant_reply,
             "history": chat_session.history
@@ -83,4 +86,5 @@ def reset():
 
 
 if __name__ == "__main__":
-    app.run(host="127.0.0.1", port=5005)
+    port = int(input("Enter port number: "))
+    app.run(host="127.0.0.1", port=port)

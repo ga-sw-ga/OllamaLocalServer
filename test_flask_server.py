@@ -32,4 +32,4 @@ def send_prompt(prompt):
 
 # 🧪 Run Test
 # reset_context()
-send_prompt("Hello! What was my last prompt to you exactly?")
+send_prompt("Hello! Who are you?")
