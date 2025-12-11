@@ -20,7 +20,7 @@ def run_tests():
     except:
         pass
 
-    # Your specific Story Nodes (Same test cases as before)
+    # Your specific Story Nodes (Extended with Long, Partial, and Random scenarios)
     test_cases = [
         {
             "fact": "The girls are Rachel Myers, Chloe Bennett, and Laura Hayes",
@@ -30,7 +30,15 @@ def run_tests():
                  "should_reveal": True},
                 {"type": "⚠️ Vague", "text": "I know who the girls are, I've seen their names in the paper.",
                  "should_reveal": False},
-                {"type": "❌ Lie", "text": "I don't know who those girls were.", "should_reveal": False}
+                {"type": "❌ Lie", "text": "I don't know who those girls were.", "should_reveal": False},
+                {"type": "📄 Long",
+                 "text": "It was a rainy night, and I was just minding my own business. I saw the missing poster later. It had three specific names on it. Rachel Myers was the first one, then Chloe Bennett, and finally Laura Hayes. I'll never forget reading those names.",
+                 "should_reveal": True},
+                {"type": "🧩 Partial",
+                 "text": "I remember Rachel Myers and Chloe Bennett, but I can't recall the third girl's name.",
+                 "should_reveal": False},
+                {"type": "🍕 Random", "text": "I really enjoy pepperoni pizza with extra cheese.",
+                 "should_reveal": False}
             ]
         },
         {
@@ -38,7 +46,14 @@ def run_tests():
             "scenarios": [
                 {"type": "✅ Reveal", "text": "The girls said a guy snatched them.", "should_reveal": True},
                 {"type": "⚠️ Vague", "text": "Someone took them, that's for sure.", "should_reveal": False},
-                {"type": "❌ Lie", "text": "They weren't kidnapped, they ran away.", "should_reveal": False}
+                {"type": "❌ Lie", "text": "They weren't kidnapped, they ran away.", "should_reveal": False},
+                {"type": "📄 Long",
+                 "text": "The police report was a mess of conflicting statements. However, one thing was consistent in all the witness accounts. Despite the confusion about the time of day, the girls report being kidnapped by a man. It definitely wasn't a woman.",
+                 "should_reveal": True},
+                {"type": "🧩 Partial", "text": "The girls report being kidnapped, but they didn't see who did it.",
+                 "should_reveal": False},
+                {"type": "🍕 Random", "text": "The weather in Grayfall is terrible this time of year.",
+                 "should_reveal": False}
             ]
         },
         {
@@ -48,7 +63,12 @@ def run_tests():
                  "text": "He used chloroform or something... drugged them before dragging them off.",
                  "should_reveal": True},
                 {"type": "⚠️ Vague", "text": "They were taken against their will.", "should_reveal": False},
-                {"type": "❌ Lie", "text": "They went with him willingly.", "should_reveal": False}
+                {"type": "❌ Lie", "text": "They went with him willingly.", "should_reveal": False},
+                {"type": "📄 Long",
+                 "text": "He didn't just grab them in broad daylight. He was calculated. He waited until they were distracted, and then the girls were drugged and abducted before anyone realized what was happening.",
+                 "should_reveal": True},
+                {"type": "🧩 Partial", "text": "They were abducted forcefully from the street.", "should_reveal": False}
+                # Missing "drugged"
             ]
         },
         {
@@ -57,7 +77,8 @@ def run_tests():
                 {"type": "✅ Reveal", "text": "He screamed at them... said he'd end their lives if they moved.",
                  "should_reveal": True},
                 {"type": "⚠️ Vague", "text": "He was very aggressive verbally.", "should_reveal": False},
-                {"type": "❌ Lie", "text": "He was actually quite polite to them.", "should_reveal": False}
+                {"type": "❌ Lie", "text": "He was actually quite polite to them.", "should_reveal": False},
+                {"type": "🍕 Random", "text": "My cat's name is Whiskers.", "should_reveal": False}
             ]
         },
         {
@@ -66,7 +87,10 @@ def run_tests():
                 {"type": "✅ Reveal", "text": "We couldn't identify him because he had this creepy mask on.",
                  "should_reveal": True},
                 {"type": "⚠️ Vague", "text": "I didn't get a good look at his face.", "should_reveal": False},
-                {"type": "❌ Lie", "text": "He wasn't hiding his face at all.", "should_reveal": False}
+                {"type": "❌ Lie", "text": "He wasn't hiding his face at all.", "should_reveal": False},
+                {"type": "📄 Long",
+                 "text": "He stood there in the shadows. He didn't say a word at first. He just stared. The scariest part was that the kidnapper wore a mask, so we couldn't see his expression at all.",
+                 "should_reveal": True}
             ]
         },
         {
@@ -102,7 +126,8 @@ def run_tests():
                 {"type": "✅ Reveal", "text": "Police located them deep inside the city sewer tunnels.",
                  "should_reveal": True},
                 {"type": "⚠️ Vague", "text": "They were found underground.", "should_reveal": False},
-                {"type": "❌ Lie", "text": "They were found in an abandoned warehouse.", "should_reveal": False}
+                {"type": "❌ Lie", "text": "They were found in an abandoned warehouse.", "should_reveal": False},
+                {"type": "🍕 Random", "text": "I need to buy groceries later.", "should_reveal": False}
             ]
         },
         {
@@ -111,12 +136,16 @@ def run_tests():
                 {"type": "✅ Reveal", "text": "They managed to break loose and crawled out via the sewer lines.",
                  "should_reveal": True},
                 {"type": "⚠️ Vague", "text": "They managed to escape on their own.", "should_reveal": False},
-                {"type": "❌ Lie", "text": "The police had to break in to rescue them.", "should_reveal": False}
+                {"type": "❌ Lie", "text": "The police had to break in to rescue them.", "should_reveal": False},
+                {"type": "📄 Long",
+                 "text": "It was a miracle, honestly. No one expected them to make it out. But against all odds, the girls found a way out and escaped through the sewers before the kidnapper returned.",
+                 "should_reveal": True}
             ]
         }
     ]
 
-    print(f"\nRunning {len(test_cases) * 3} scenarios via LLM...\n")
+    total_tests = sum(len(case['scenarios']) for case in test_cases)
+    print(f"\nRunning {total_tests} scenarios via LLM...\n")
 
     passes = 0
     fails = 0
@@ -180,7 +209,10 @@ def run_tests():
         print("-" * 40)
 
     print(f"\nFinal Results: {passes} Pass | {fails} Fail")
-    print(f"Accuracy: {(passes / (passes + fails)) * 100:.1f}%")
+    if fails == 0:
+        print(f"Accuracy: 100.0%")
+    else:
+        print(f"Accuracy: {(passes / (passes + fails)) * 100:.1f}%")
 
 
 if __name__ == "__main__":
