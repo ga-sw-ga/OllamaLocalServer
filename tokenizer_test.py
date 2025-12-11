@@ -1,7 +1,7 @@
 from transformers import AutoTokenizer
 
 # Path to the tokenizer directory
-TOKENIZER_PATH = r"C:\Users\parsa.rahmaty\.cache\llamatokenizer"
+TOKENIZER_PATH = r".\llamatokenizer"
 
 # Load the tokenizer
 tokenizer = AutoTokenizer.from_pretrained(TOKENIZER_PATH, use_fast=True)

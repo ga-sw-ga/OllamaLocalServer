@@ -1,17 +1,23 @@
 from flask import Flask, request, jsonify
 import requests
 from transformers import AutoTokenizer
+import time
+from time import gmtime, strftime
 
 # Setup
 app = Flask(__name__)
 OLLAMA_URL = "http://localhost:11434/api/generate"
 MODEL_NAME = "llama3.1"
 
+obj = time.localtime(time.time())
+# f = open(obj.tm_year.__str__() + obj.tm_mon.__str__() + obj.tm_mday.__str__() + "_" + obj.tm_hour.__str__() + "-" + obj.tm_min.__str__() + "-" + obj.tm_sec.__str__() + ".txt", "w")
+
 # Load tokenizer (used if needed for advanced control, not required for core logic)
 TOKENIZER_PATH = r".\llamatokenizer"
 tokenizer = AutoTokenizer.from_pretrained(TOKENIZER_PATH, use_fast=True)
 
 port = 0
+prompt_index = 0
 
 # 🧠 ChatSession stores the running conversation
 class ChatSession:
@@ -57,6 +63,7 @@ chat_session = ChatSession(model=MODEL_NAME)
 
 @app.route("/chat", methods=["POST"])
 def chat():
+    global prompt_index
     try:
         data = request.get_json()
         user_prompt = data.get("prompt", "").strip()
@@ -67,7 +74,18 @@ def chat():
         chat_session.add_user_message(user_prompt)
         assistant_reply = chat_session.send_prompt()
 
-        print("Reply: " + assistant_reply)
+        # print("user_prompt: ", user_prompt)
+        # print("assistant_reply: ", assistant_reply)
+
+        # if port == 5005 and prompt_index > 0:
+        #     f.write(user_prompt[user_prompt.index("Detective: "):user_prompt.index("\nFact: ")])
+        #     f.write("Suspect: " + assistant_reply + "\n")
+        #     f.write(user_prompt[user_prompt.index("Fact: "):user_prompt.index("\nRespond below (just your spoken words).")])
+        # elif port == 5006:
+        #     f.write(user_prompt[user_prompt.index("Detective: "):user_prompt.index("Fact: ")])
+        # f.write("Yay!")
+
+        prompt_index += 1
 
         return jsonify({
             "response": assistant_reply,
