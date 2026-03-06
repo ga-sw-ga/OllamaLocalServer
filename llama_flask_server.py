@@ -7,7 +7,7 @@ from time import gmtime, strftime
 # Setup
 app = Flask(__name__)
 OLLAMA_URL = "http://localhost:11434/api/generate"
-MODEL_NAME = "llama3.1"
+MODEL_NAME = "llama3.2"
 
 obj = time.localtime(time.time())
 # f = open(obj.tm_year.__str__() + obj.tm_mon.__str__() + obj.tm_mday.__str__() + "_" + obj.tm_hour.__str__() + "-" + obj.tm_min.__str__() + "-" + obj.tm_sec.__str__() + ".txt", "w")
