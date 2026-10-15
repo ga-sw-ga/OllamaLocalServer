@@ -5,7 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="58371b15-19e1-48a5-a776-6454f41f5ad1" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/OllamaLocalServer.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/OllamaLocalServer.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/aws_flask_server.py" beforeDir="false" afterPath="$PROJECT_DIR$/aws_flask_server.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/aws_flask_server_detection.py" beforeDir="false" afterPath="$PROJECT_DIR$/aws_flask_server_detection.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -161,8 +165,8 @@
       <method v="2" />
     </configuration>
     <list>
-      <item itemvalue="Python.aws_flask_server_detection" />
       <item itemvalue="Python.aws_flask_server" />
+      <item itemvalue="Python.aws_flask_server_detection" />
       <item itemvalue="Python.aws_test_script" />
       <item itemvalue="Python.cross_encoder_server" />
       <item itemvalue="Python.llama_flask_server" />

@@ -1,37 +1,28 @@
-import boto3
 import os
-import json
 from flask import Flask, request, jsonify
 from dotenv import load_dotenv
+from groq import Groq
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
 env_path = os.path.join(script_dir, '.env')
 load_dotenv(dotenv_path=env_path)
 
-ACCESS_KEY = os.getenv("AWS_ACCESS_KEY_ID")
-SECRET_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
-REGION = os.getenv("AWS_REGION", "us-west-2")
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+if not GROQ_API_KEY:
+    print("WARNING: No GROQ_API_KEY found in .env file!")
+
+try:
+    client = Groq(api_key=GROQ_API_KEY)
+    print("Successfully connected to Groq.")
+except Exception as e:
+    print(f"Connection Error: {e}")
+
+MODEL_ID = "qwen/qwen3.8-27b"
 
 app = Flask(__name__)
 
 # ---------------------------------------------------------
-# 1. AWS CONNECTION
-# ---------------------------------------------------------
-try:
-    bedrock = boto3.client(
-        service_name='bedrock-runtime',
-        region_name=REGION,
-        aws_access_key_id=ACCESS_KEY,
-        aws_secret_access_key=SECRET_KEY
-    )
-    print("Successfully connected to AWS Bedrock.")
-except Exception as e:
-    print(f"Connection Error: {e}")
-
-MODEL_ID = "meta.llama3-1-70b-instruct-v1:0"
-
-# ---------------------------------------------------------
-# 2. SYSTEM PROMPT (Detection - Method 2)
+# SYSTEM PROMPT (Detection - Method 2)
 # ---------------------------------------------------------
 DETECTION_PROMPT = """You are an expert semantic text analysis model. Your task is to determine if the core meaning of a "Fact" is confirmed by the given "Dialogue".
 
@@ -43,36 +34,30 @@ First, write a single brief sentence evaluating if the dialogue confirms the fac
 Then, on a new line, output exactly "RESULT: true" or "RESULT: false"."""
 
 # ---------------------------------------------------------
-# 3. FORMATTER
-# ---------------------------------------------------------
-def format_llama_prompt(system_info, history):
-    prompt = f"<|begin_of_text|><|start_header_id|>system<|end_header_id|>\n\n{system_info}<|eot_id|>"
-    for msg in history:
-        prompt += f"<|start_header_id|>{msg['role']}<|end_header_id|>\n\n{msg['content']}<|eot_id|>"
-    prompt += "<|start_header_id|>assistant<|end_header_id|>\n\n"
-    return prompt
-
-# ---------------------------------------------------------
-# 4. THE ENDPOINTS
+# THE ENDPOINTS
 # ---------------------------------------------------------
 
 # --- ENDPOINT: THE LOGIC DETECTOR ---
-# Notice this is back to '/chat' so Unreal Engine doesn't complain!
 @app.route('/chat', methods=['POST'])
 def chat_detect():
     try:
         user_text = request.get_json().get("prompt", "").strip()
 
-        # Stateless: We create a temporary history list just for this one request
-        temp_history = [{"role": "user", "content": user_text}]
-        compiled_prompt = format_llama_prompt(DETECTION_PROMPT, temp_history)
+        # Stateless: We send the system prompt and the user's text dynamically
+        messages_payload = [
+            {"role": "system", "content": DETECTION_PROMPT},
+            {"role": "user", "content": user_text}
+        ]
 
         # Low temperature for strict logic (0.1)
-        payload = {"prompt": compiled_prompt, "max_gen_len": 150, "temperature": 0.1}
+        response = client.chat.completions.create(
+            model=MODEL_ID,
+            messages=messages_payload,
+            temperature=0.1,
+            max_tokens=150
+        )
 
-        response = bedrock.invoke_model(body=json.dumps(payload), modelId=MODEL_ID, accept='application/json',
-                                        contentType='application/json')
-        ai_reply = json.loads(response.get('body').read()).get('generation', '').strip()
+        ai_reply = response.choices[0].message.content.strip()
 
         # The Parser
         ai_reply_lower = ai_reply.lower()
@@ -95,6 +80,5 @@ def reset():
 
 
 if __name__ == "__main__":
-    print("Starting Detection Server on Port 5007...")
-    # This specifically targets Port 5007
+    print("Starting Groq Detection Server on Port 5007...")
     app.run(host="127.0.0.1", port=5007)
